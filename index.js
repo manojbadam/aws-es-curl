@@ -69,7 +69,8 @@ var execute = function(endpoint, region, path, method, body) {
       }
     }
     
-    req.headers['presigned-expires'] = false; 
+    req.headers['presigned-expires'] = false;
+    req.headers['content-type'] = 'application/json'; 
     req.headers.Host = endpoint.host;
 
     var signer = new AWS.Signers.V4(req, 'es'); 
@@ -103,6 +104,9 @@ var main = function() {
       if(!process.stdin.isTTY) {
         input = yield readStdin();
       }
+      if(!input) {
+        input = options.data || options.d;
+      }
 
       if(!maybeUrl || (maybeUrl && maybeUrl == 'help') || options.help || options.h) {
         console.log('Usage: aws-es-curl [options] <url>');
@@ -111,6 +115,7 @@ var main = function() {
         console.log("\t-X, --method \tHTTP method \t(Default: GET)");
         console.log("\t--profile \tAWS profile \t(Default: default)");
         console.log("\t--region \tAWS region \t(Default: eu-west-1)");
+        console.log("\t-d, --data \tSends the specified data in a POST request");
         process.exit(1);
       }
 
